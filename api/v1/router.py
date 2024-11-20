@@ -5,6 +5,7 @@ from api.v1.handlers import (
     permission_handler,
     file_handler,
     course_handler,
+    stripe_handler,
 )
 from api.auth.jwt import auth_router
 
@@ -19,3 +20,4 @@ router.include_router(
 )
 router.include_router(file_handler.file_router, prefix="/file", tags=["Files"])
 router.include_router(course_handler.course_router, prefix="/course", tags=["Courses"])
+router.include_router(stripe_handler.stripe_router, prefix="/stripe", tags=["Stripe"])

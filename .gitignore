@@ -3,3 +3,22 @@
 /.venv
 /.vscode
 /__pycache__
+/venv
+/env
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+
+# Virtual Environment
+venv/
+env/
+
+# Pytest
+.pytest_cache/
+
+# Pytest
+.pytest_cache/
