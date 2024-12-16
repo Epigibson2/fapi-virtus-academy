@@ -55,7 +55,7 @@ class StripeServices:
         return await self.payment_services.handle_payment_failed(*args, **kwargs)
 
     async def search_subscription(self, *args, **kwargs):
-        return await self.subscription_services.search_subscription(*args, **kwargs)
+        return await self.subscription_services.search_subscriptions(*args, **kwargs)
 
     async def create_subscription(self, *args, **kwargs):
         return await self.subscription_services.create_subscription(*args, **kwargs)
@@ -63,8 +63,8 @@ class StripeServices:
     async def cancel_subscription(self, *args, **kwargs):
         return await self.subscription_services.cancel_subscription(*args, **kwargs)
 
-    async def update_subscription(self, *args, **kwargs):
-        return await self.subscription_services.update_subscription(*args, **kwargs)
+    async def resume_subscription(self, *args, **kwargs):
+        return await self.subscription_services.resume_subscription(*args, **kwargs)
 
-    async def get_subscription(self, *args, **kwargs):
-        return await self.subscription_services.get_subscription(*args, **kwargs)
+    async def get_subscriptions(self, *args, **kwargs):
+        return await self.subscription_services.get_subscriptions(*args, **kwargs)

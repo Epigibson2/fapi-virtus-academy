@@ -226,13 +226,32 @@ class StripeWebhookServices:
                 )
                 await asyncio.sleep(delay)
 
-    # Implementar los otros handlers con lógica específica
     async def handle_subscription_created(
         self, event: StripeWebhookEvent
     ) -> Dict[str, Any]:
         """Maneja eventos de suscripción creada"""
-        # Implementar lógica específica
-        pass
+        try:
+            subscription = event.data.object
+            customer_id = subscription.get("customer")
+            subscription_id = subscription.get("id")
+
+            # Aquí deberías actualizar tu base de datos con la nueva suscripción
+            # await update_user_subscription(customer_id, subscription_id)
+
+            return {
+                "status": "success",
+                "message": f"Subscription created: {subscription_id}",
+                "customer_id": customer_id,
+            }
+        except Exception as e:
+            logger.error(
+                {
+                    "message": "Error processing subscription creation",
+                    "error": str(e),
+                    "event_id": event.id,
+                }
+            )
+            raise PaymentError(f"Failed to process subscription creation: {str(e)}")
 
     async def handle_subscription_updated(
         self, event: StripeWebhookEvent
@@ -245,8 +264,26 @@ class StripeWebhookServices:
         self, event: StripeWebhookEvent
     ) -> Dict[str, Any]:
         """Maneja eventos de suscripción eliminada"""
-        # Implementar lógica específica
-        pass
+        try:
+            subscription = event.data.object
+            customer_id = subscription.get("customer")
+
+            # Aquí deberías actualizar tu base de datos para marcar la suscripción como cancelada
+            # await cancel_user_subscription(customer_id)
+
+            return {
+                "status": "success",
+                "message": f"Subscription cancelled for customer: {customer_id}",
+            }
+        except Exception as e:
+            logger.error(
+                {
+                    "message": "Error processing subscription cancellation",
+                    "error": str(e),
+                    "event_id": event.id,
+                }
+            )
+            raise PaymentError(f"Failed to process subscription cancellation: {str(e)}")
 
     async def handle_invoice_paid(self, event: StripeWebhookEvent) -> Dict[str, Any]:
         """Maneja eventos de factura pagada"""
@@ -255,5 +292,27 @@ class StripeWebhookServices:
 
     async def handle_payment_failed(self, event: StripeWebhookEvent) -> Dict[str, Any]:
         """Maneja eventos de pago fallido"""
-        # Implementar lógica específica
-        pass
+        try:
+            invoice = event.data.object
+            customer_id = invoice.get("customer")
+            attempt_count = invoice.get("attempt_count", 1)
+
+            # Aquí podrías notificar al usuario sobre el fallo del pago
+            # await notify_payment_failure(customer_id, attempt_count)
+
+            return {
+                "status": "processed",
+                "message": f"Payment failed for customer: {customer_id}, attempt: {attempt_count}",
+            }
+        except Exception as e:
+            logger.error(
+                {
+                    "message": "Error processing payment failure",
+                    "error": str(e),
+                    "event_id": event.id,
+                }
+            )
+            return {
+                "status": "error",
+                "message": f"Error processing payment failure: {str(e)}",
+            }
