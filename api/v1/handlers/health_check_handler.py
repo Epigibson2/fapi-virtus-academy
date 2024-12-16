@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 health_check_router = APIRouter()
 
 
-@health_check_router.post("/")
+@health_check_router.get("/")
 async def health_check_endpoint():
     try:
         return {
