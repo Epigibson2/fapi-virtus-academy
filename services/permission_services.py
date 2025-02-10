@@ -1,3 +1,4 @@
+from click import Argument
 from fastapi import HTTPException
 from models.permission_model import Permission
 from schemas.permission_schema import PermissionCreate, PermissionUpdate
@@ -29,6 +30,18 @@ class PermissionsServices:
             Permission model instance
         """
         permission = await Permission.find_one(Permission.id == permission_id)
+        return permission
+
+    @staticmethod
+    async def get_permission_by_name(permission_name: str):
+        """Get a permission by name
+        Arguments:
+            permission_name: Permission name
+
+        Returns:
+            Permission model instance
+        """
+        permission = await Permission.find_one(Permission.name == permission_name)
         return permission
 
     @staticmethod
@@ -68,7 +81,7 @@ class PermissionsServices:
         return permission
 
     @staticmethod
-    async def delete_permission(permission_id: str):
+    async def delete_permission(permission_id: PydanticObjectId):
         """Delete a permission
 
         Arguments:

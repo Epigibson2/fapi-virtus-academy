@@ -2,6 +2,7 @@ from typing import Type, TypeVar
 from beanie import Document
 from bson import ObjectId
 from fastapi import HTTPException, status
+from pydantic import EmailStr
 
 from models.user_model import User
 from utils.error_codes import ErrorCodes
@@ -26,7 +27,7 @@ async def get_valid_document(id: str, model: Type[T]) -> T:
     return document
 
 
-async def user_exists(username: str, email: str):
+async def user_exists(username: str, email: EmailStr):
     existing_user = await User.find_one(User.username == username)
     if existing_user:
         raise HTTPException(

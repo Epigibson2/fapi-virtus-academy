@@ -28,7 +28,7 @@ async def get_all_permissions_handler():
         )
     
 @permission_router.get("/{permission_id}")
-async def get_permission_by_id_handler(permission_id: str):
+async def get_permission_by_id_handler(permission_id: PydanticObjectId):
     try:
         return await PermissionsServices.get_permission_by_id(permission_id)
     except Exception as e:

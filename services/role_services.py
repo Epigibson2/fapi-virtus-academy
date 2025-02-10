@@ -50,6 +50,20 @@ class RoleService:
         return role
 
     @staticmethod
+    async def get_role_by_name(name: str):
+        """Get a role by name
+
+        Arguments:
+            name: string = Role name
+
+        Returns:
+            Role model instance
+        """
+        role = await Role.find_one(Role.name == name)
+        await role.fetch_link(Role.permissions)
+        return role
+
+    @staticmethod
     async def get_all_roles():
         """Get all roles
 
@@ -78,7 +92,7 @@ class RoleService:
         return new_role
 
     @staticmethod
-    async def delete_role(role_id: str):
+    async def delete_role(role_id: PydanticObjectId):
         """Delete a role
 
         Arguments:

@@ -18,6 +18,7 @@ class UserCreate(AutoDates):
     username: str = Field()
     email: EmailStr = Field()
     password: str = Field()
+    is_admin: bool = Field(default=False)
 
 
 class UserUpdate(AutoDates):
@@ -45,12 +46,12 @@ class UserSchema(UserInDB):
     following_count: int = Field(default=0)
     private_account: bool = Field(default=False)
     verified: bool = Field(default=False)
-    last_login: Optional[datetime] = Field(default=datetime.now)
+    last_login: Optional[datetime] = Field(default_factory=datetime.now)  # Cambiado aquí
     is_teacher: bool = Field(default=False)
     is_student: bool = Field(default=False)
     phone_number: Optional[str] = Field(default="")
     gender: Optional[str] = Field(default="")
-    birth_date: Optional[datetime] = Field(default=datetime.now)
+    birth_date: Optional[datetime] = Field(default_factory=datetime.now)  # Y aquí también
     interests: Optional[list[str]] = Field(default=[])
     skills: Optional[list[str]] = Field(default=[])
     achievements: Optional[list[str]] = Field(default=[])

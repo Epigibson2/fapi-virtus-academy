@@ -5,8 +5,9 @@ from api.v1.handlers import (
     permission_handler,
     file_handler,
     course_handler,
-    stripe_handler,
-    health_check_handler
+    health_check_handler,
+    verification_codes_handler,
+    account_utils_handler
 )
 from api.auth.jwt import auth_router
 
@@ -23,4 +24,5 @@ router.include_router(file_handler.file_router, prefix="/file", tags=["Files"])
 router.include_router(course_handler.course_router, prefix="/course", tags=["Courses"])
 router.include_router(health_check_handler.health_check_router, prefix="/health-check",
                       tags=["Health Check"]),
-router.include_router(stripe_handler.stripe_router, prefix="/stripe", tags=["Stripe"])
+router.include_router(verification_codes_handler.verification_codes_router, prefix="/verification-codes", tags=["Verification Codes"])
+router.include_router(account_utils_handler.account_utils_router, prefix="/account-utils", tags=["Account Utils"])

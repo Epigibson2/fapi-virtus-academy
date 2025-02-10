@@ -3,12 +3,18 @@ from typing import Optional
 import logging
 
 from fastapi import HTTPException, status
+
+from models.role_model import Role
 from models.user_model import User
 from models.token_model import BlacklistToken
+from schemas.permission_schema import PermissionCreate
+from schemas.role_schemas import RoleCreate
 from schemas.user_schema import UserCreate, UserUpdate, UserInDB
 from schemas.auth_schema import TokenSchema
 from services.util_services import get_valid_document, user_exists
 from utils.auth_utils import get_password_hash, verify_password
+from services.role_services import RoleService
+from services.permission_services import PermissionsServices
 
 logger = logging.getLogger(__name__)
 
@@ -97,13 +103,59 @@ class UserServices:
 
             # Hash password
             hashed_password = get_password_hash(user.password)
+            role_created = None
+
+            admin_permissions = ["crear", "editar", "lectura", "eliminar"]
+            permissions_created = []
+            for permission in admin_permissions:
+                try:
+                    permission_data = PermissionCreate(
+                        name=permission,
+                        description=f"Permiso para {permission}",
+                    )
+                    permission_result = await PermissionsServices.create_permission(permission_data)
+                    if permission_result:
+                        permissions_created.append(str(permission_result.name))
+                except Exception as e:
+                    # Si el permiso ya existe, lo recuperamos (evita detener el flujo)
+                    existing_permission = await PermissionsServices.get_permission_by_name(permission)
+                    if existing_permission:
+                        permissions_created.append(existing_permission.name)
+
+
+            if user.is_admin:
+                admin_role = None
+                try:
+                    admin_role = RoleCreate(
+                        name=f"Administrador",
+                        description=f"Permiso para {user.username}",
+                        permissions=permissions_created,
+                    )
+                    role_created = await RoleService.create_role(name=admin_role.name, description=admin_role.description, permissions=admin_role.permissions)
+                except Exception as e:
+                    existing_role = await RoleService.get_role_by_name(admin_role.name)
+                    if existing_role:
+                        role_created = existing_role
+            else:
+                user_role = RoleCreate(
+                    name=f"User",
+                    description=f"Permiso para usuarios",
+                    permissions=permissions_created,
+                )
+                result = await RoleService.create_role(user_role.name, description=user_role.description, permissions=user_role.permissions)
+                if result:
+                    role_created = result
+                else:
+                    search_role = await Role.find_one(Role.name == user_role.name)
+                    if search_role:
+                        role_created = search_role
 
             user_in_db = UserInDB(
                 username=user.username,
                 email=user.email,
                 hashed_password=hashed_password,
                 active=True,
-                roles=[],
+                roles=[role_created.id],
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
             )
