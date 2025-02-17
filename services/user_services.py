@@ -126,26 +126,34 @@ class UserServices:
             if user.is_admin:
                 admin_role = None
                 try:
-                    admin_role = RoleCreate(
-                        name=f"Administrador",
-                        description=f"Permiso para {user.username}",
-                        permissions=permissions_created,
-                    )
-                    role_created = await RoleService.create_role(name=admin_role.name, description=admin_role.description, permissions=admin_role.permissions)
+                    search_if_role_already_exist = await RoleService.get_role_by_name("Administrador")
+                    if search_if_role_already_exist:
+                        admin_role = search_if_role_already_exist
+                    else:
+                        admin_role = RoleCreate(
+                            name=f"Administrador",
+                            description=f"Permiso para {user.username}",
+                            permissions=permissions_created,
+                        )
+                        role_created = await RoleService.create_role(name=admin_role.name, description=admin_role.description, permissions=admin_role.permissions)
+
                 except Exception as e:
-                    existing_role = await RoleService.get_role_by_name(admin_role.name)
-                    if existing_role:
-                        role_created = existing_role
+                    if e.args[0] == 400:
+                        existing_role = await RoleService.get_role_by_name(admin_role.name)
+                        if existing_role:
+                            role_created = existing_role
             else:
                 user_role = RoleCreate(
                     name=f"User",
                     description=f"Permiso para usuarios",
                     permissions=permissions_created,
                 )
-                result = await RoleService.create_role(user_role.name, description=user_role.description, permissions=user_role.permissions)
-                if result:
+                try:
+                    result = await RoleService.create_role(user_role.name, description=user_role.description, permissions=user_role.permissions)
                     role_created = result
-                else:
+
+                except Exception as e:
+                    print("Error creating role: " + str(e))
                     search_role = await Role.find_one(Role.name == user_role.name)
                     if search_role:
                         role_created = search_role
