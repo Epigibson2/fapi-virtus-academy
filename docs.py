@@ -5,6 +5,7 @@ tags_metadata = [
     {"name": "Permissions", "description": "Permissions routes"},
     {"name": "Files", "description": "Files routes"},
     {"name": "Courses", "description": "Courses routes"},
+    {"name": "Lessons", "description": "Lessons routes"},
     {"name": "Invoices", "description": "Invoices routes"},
     {"name": "Verification Codes", "description": "Verification Codes routes"},
     {"name": "Account Utils", "description": "Account Utils routes"},

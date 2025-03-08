@@ -6,6 +6,7 @@ from models.role_model import Permission, Role
 from models.user_model import User
 from models.files_model import File
 from models.courses_model import Course
+from models.lesson_model import Lesson
 from models.token_model import BlacklistToken
 from models.verification_code_model import VerificationCode
 
@@ -26,6 +27,7 @@ async def init_db():
             Role,
             File,
             Course,
+            Lesson,
             BlacklistToken,
             ResetPassword,
             VerificationCode

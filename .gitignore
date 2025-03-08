@@ -14,7 +14,7 @@
 *.pyz
 
 # Virtual Environment
-venv/
+.venv/
 env/
 
 # Pytest
@@ -22,3 +22,10 @@ env/
 
 # Pytest
 .pytest_cache/
+
+# Ignore all __pycache__ directories
+**/__pycache__/
+
+# Ignore the layer directory within fastapi_app
+layer/
+build/

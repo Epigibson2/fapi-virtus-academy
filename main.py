@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append("/opt/python/lib/python3.12/site-packages")
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -7,7 +10,7 @@ from api.v1.router import router
 from core.config import settings
 from dependencies.database import init_db
 from docs import tags_metadata
-
+from mangum import Mangum
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,6 +22,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
+    root_path="/dev",
     description="API para la plataforma de Virtus Academy",
     version="0.1.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
@@ -37,3 +41,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/openapi.json", include_in_schema=False)
+async def get_open_api_endpoint():
+    return JSONResponse(content=get_openapi(title="Mi API", version="1.0.0", routes=app.routes))
+
+handler = Mangum(app)
